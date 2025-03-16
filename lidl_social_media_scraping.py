@@ -8,8 +8,8 @@ Created on Sun Mar 16 13:46:10 2025
 import requests
 
 # API kulcs és CSE ID
-api_key = "AIzaSyBeU-505OOFSMgqEwNVz0vCfCFuTk8XPFE"  # Cseréld le a saját API kulcsodra
-cx = "f2c1ef21db05c49e1"  # Cseréld le a saját CSE ID-dra
+api_key = ""  # Cseréld le a saját API kulcsodra
+cx = ""  # Cseréld le a saját CSE ID-dra
 
 # Keresési kulcsszavak
 query = 'LIDL ("AI" OR "Machine Learning" OR "Data Science") site:instagram.com OR site:twitter.com OR site:facebook.com'  # LIDL szó és az egyik kívánt kifejezés
