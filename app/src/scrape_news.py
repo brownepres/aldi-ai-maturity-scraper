@@ -4,7 +4,7 @@ def scrapeNews():
        'q=Apple&AI'
        'from=2025-03-10&'
        'sortBy=popularity&'
-       'apiKey=237d140128514a4bb46272ece0d0bbff')
+       'apiKey=xx')
 
     response = requests.get(url).json()
     return response
