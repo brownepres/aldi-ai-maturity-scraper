@@ -11,31 +11,34 @@ companies = [
 # Évek, amelyekre az adatokat kérjük
 years = ["2021", "2022", "2023", "2024"]
 
-# Adatok tárolására
-results = []
+def get_financial_data():
 
-for company in companies:
-    try:
-        ticker = yf.Ticker(company)
-        financials = ticker.financials
-        
-        for year in years:
-            if year in financials.columns:
-                total_revenue = financials.loc["Total Revenue", year] if "Total Revenue" in financials.index else None
-                gross_profit = financials.loc["Gross Profit", year] if "Gross Profit" in financials.index else None
-                
-                results.append({
-                    "Company": company,
-                    "Year": year,
-                    "Total Revenue": total_revenue,
-                    "Gross Profit": gross_profit
-                })
-    except Exception as e:
-        print(f"Error fetching data for {company}: {e}")
+    # Adatok tárolására
+    results = []
 
-# Adatok DataFrame-be
-df = pd.DataFrame(results)
-print(df)
+    for company in companies:
+        try:
+            ticker = yf.Ticker(company)
+            financials = ticker.financials
+            
+            for year in years:
+                if year in financials.columns:
+                    total_revenue = financials.loc["Total Revenue", year] if "Total Revenue" in financials.index else None
+                    gross_profit = financials.loc["Gross Profit", year] if "Gross Profit" in financials.index else None
+                    
+                    results.append({
+                        "Company": company,
+                        "Year": year,
+                        "Total Revenue": total_revenue,
+                        "Gross Profit": gross_profit
+                    })
+        except Exception as e:
+            print(f"Error fetching data for {company}: {e}")
 
-# Mentés CSV-be
-df.to_csv("financial_data.csv", index=False)
+    return results
+    # Adatok DataFrame-be
+    #df = pd.DataFrame(results)
+    #print(df)
+
+    # Mentés CSV-be
+    #df.to_csv("financial_data.csv", index=False)
