@@ -292,6 +292,112 @@ def thinkhdi():
 
     return all_articles
 
+def servicenow_blog():
+    options = webdriver.ChromeOptions()
+    options.add_argument("--start-maximized")
+    driver = webdriver.Chrome(options=options)
+
+    urls = [
+        "https://www.servicenow.com/blogs/2025",
+        "https://www.servicenow.com/blogs/2024"
+    ]
+
+    all_articles = []
+
+    # Két oldal kezelése
+    for url in urls:
+        driver.get(url)
+
+        # Cookie elfogadása, ha szükséges
+        try:
+            WebDriverWait(driver, 5).until(
+                EC.element_to_be_clickable((By.ID, "onetrust-accept-btn-handler"))
+            ).click()
+        except:
+            pass
+
+        # Cikkek betöltése
+        try:
+            WebDriverWait(driver, 10).until(
+                EC.presence_of_all_elements_located((By.CLASS_NAME, "card"))
+            )
+            
+            # Cikkek begyűjtése
+            articles = driver.find_elements(By.CLASS_NAME, "card")
+            
+            # Cikkek feldolgozása
+            for article in articles:
+                try:
+                    title_elem = article.find_element(By.TAG_NAME, "a")
+                    title = title_elem.text.strip()
+                    
+                    # Link beszerzése
+                    relative_link = title_elem.get_attribute("href")
+                    full_link = f"https://www.servicenow.com{relative_link}" if relative_link.startswith("/") else relative_link
+                    
+                    # Dátum
+                    date_elem = article.find_element(By.CLASS_NAME, "card-date")
+                    date = date_elem.text.strip() if date_elem else "Nincs dátum"
+                    
+                    all_articles.append({
+                        "title": title,
+                        "link": full_link,
+                        "date": date
+                    })
+                except Exception as e:
+                    print(f"Elem feldolgozási hiba: {e}")
+                    continue
+
+            # "Load More" gomb megnyomása, ha létezik
+            while True:
+                try:
+                    load_more_button = WebDriverWait(driver, 5).until(
+                        EC.element_to_be_clickable((By.CLASS_NAME, "cta-loadmore"))
+                    )
+                    load_more_button.click()  # Rákattintunk a "Load More" gombra
+                    time.sleep(3)  # Várakozunk egy kicsit, hogy a cikkek betöltődjenek
+
+                    # Cikkek újra betöltése
+                    articles = driver.find_elements(By.CLASS_NAME, "card")
+
+                    for article in articles:
+                        try:
+                            title_elem = article.find_element(By.TAG_NAME, "a")
+                            title = title_elem.text.strip()
+                            
+                            relative_link = title_elem.get_attribute("href")
+                            full_link = f"https://www.servicenow.com{relative_link}" if relative_link.startswith("/") else relative_link
+                            
+                            date_elem = article.find_element(By.CLASS_NAME, "card-date")
+                            date = date_elem.text.strip() if date_elem else "Nincs dátum"
+                            
+                            all_articles.append({
+                                "title": title,
+                                "link": full_link,
+                                "date": date
+                            })
+                        except Exception as e:
+                            print(f"Elem feldolgozási hiba: {e}")
+                            continue
+
+                except:
+                    # Ha nincs több "Load More" gomb
+                    print("Nincs több cikk betölthető.")
+                    break
+
+        except Exception as e:
+            print(f"Cikkek betöltési hiba: {e}")
+
+    driver.quit()
+
+    # Cikkek kiírása
+    for article in all_articles:
+        print(f"Cím: {article['title']}")
+        print(f"Link: {article['link']}")
+        print(f"Dátum: {article['date']}\n")
+
+    return all_articles
+
 
 # celonis.com
 celonis()
@@ -305,3 +411,6 @@ sstonework()
 
 # thinkhdi.com
 thinkhdi()
+
+#servicenow.com/blog
+servicenow_blog()
