@@ -3,6 +3,37 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import time
+import pandas as pd
+import requests
+from bs4 import BeautifulSoup
+
+import re
+import requests
+from bs4 import BeautifulSoup
+from collections import Counter
+import nltk
+
+from nltk.corpus import stopwords
+from nltk.stem import WordNetLemmatizer, PorterStemmer
+from nltk.tokenize import word_tokenize
+
+from sklearn.feature_extraction.text import TfidfVectorizer
+
+nltk.download("stopwords")
+nltk.download("punkt")
+nltk.download("wordnet")
+nltk.download("omw-1.4")
+
+stop_words = set(stopwords.words("english"))
+lemmatizer = WordNetLemmatizer()
+stemmer = PorterStemmer()
+
+
+def preprocess_tokens(text):
+    tokens = word_tokenize(text.lower())
+    tokens = [word for word in tokens if word.isalpha() and word not in stop_words]
+    tokens = [stemmer.stem(lemmatizer.lemmatize(word)) for word in tokens]
+    return tokens
 
 def celonis():
     options = webdriver.ChromeOptions()
@@ -61,7 +92,7 @@ def celonis():
     return all_articles
 
 
-def news(pages=20):
+def news(pages=2):
     options = webdriver.ChromeOptions()
     options.add_argument("--start-maximized")
     driver = webdriver.Chrome(options=options)
@@ -292,125 +323,127 @@ def thinkhdi():
 
     return all_articles
 
-def servicenow_blog():
-    options = webdriver.ChromeOptions()
-    options.add_argument("--start-maximized")
-    driver = webdriver.Chrome(options=options)
 
-    urls = [
-        "https://www.servicenow.com/blogs/2025",
-        "https://www.servicenow.com/blogs/2024"
-    ]
+def servicenow():
+    # WebDriver beállítása
+    driver = webdriver.Chrome()
 
-    all_articles = []
+    # URL, amelyet scrapelni szeretnél
+    url = "https://www.servicenow.com/research/publication.html"
 
-    # Két oldal kezelése
-    for url in urls:
-        driver.get(url)
+    # Oldal betöltése
+    driver.get(url)
 
-        # Cookie elfogadása, ha szükséges
-        try:
-            WebDriverWait(driver, 5).until(
-                EC.element_to_be_clickable((By.ID, "onetrust-accept-btn-handler"))
-            ).click()
-        except:
-            pass
+    # Várakozás, hogy a JavaScript betöltse az adatokat
+    time.sleep(5)
 
-        # Cikkek betöltése
-        try:
-            WebDriverWait(driver, 10).until(
-                EC.presence_of_all_elements_located((By.CLASS_NAME, "card"))
-            )
-            
-            # Cikkek begyűjtése
-            articles = driver.find_elements(By.CLASS_NAME, "card")
-            
-            # Cikkek feldolgozása
-            for article in articles:
-                try:
-                    title_elem = article.find_element(By.TAG_NAME, "a")
-                    title = title_elem.text.strip()
-                    
-                    # Link beszerzése
-                    relative_link = title_elem.get_attribute("href")
-                    full_link = f"https://www.servicenow.com{relative_link}" if relative_link.startswith("/") else relative_link
-                    
-                    # Dátum
-                    date_elem = article.find_element(By.CLASS_NAME, "card-date")
-                    date = date_elem.text.strip() if date_elem else "Nincs dátum"
-                    
-                    all_articles.append({
-                        "title": title,
-                        "link": full_link,
-                        "date": date
-                    })
-                except Exception as e:
-                    print(f"Elem feldolgozási hiba: {e}")
-                    continue
+    # Cikkek keresése
+    publications = driver.find_elements(By.CLASS_NAME, 'pub-list-item')
 
-            # "Load More" gomb megnyomása, ha létezik
-            while True:
-                try:
-                    load_more_button = WebDriverWait(driver, 5).until(
-                        EC.element_to_be_clickable((By.CLASS_NAME, "cta-loadmore"))
-                    )
-                    load_more_button.click()  # Rákattintunk a "Load More" gombra
-                    time.sleep(3)  # Várakozunk egy kicsit, hogy a cikkek betöltődjenek
+    # Változó a cikkek mentésére
+    publications_data = []
 
-                    # Cikkek újra betöltése
-                    articles = driver.find_elements(By.CLASS_NAME, "card")
+    # Cikkek címének és PDF linkjének kinyerése
+    for pub in publications:
+        title = pub.find_element(By.CSS_SELECTOR, 'a[style="font-weight: bold;"]')
+        pdf_link = pub.find_element(By.CLASS_NAME, 'btn-outline-primary').get_attribute('href')
+        
+        # Ha mindkét adat létezik, hozzáadjuk a listához
+        if title and pdf_link:
+            publications_data.append({
+                'title': title.text,
+                'link': pdf_link
+            })
 
-                    for article in articles:
-                        try:
-                            title_elem = article.find_element(By.TAG_NAME, "a")
-                            title = title_elem.text.strip()
-                            
-                            relative_link = title_elem.get_attribute("href")
-                            full_link = f"https://www.servicenow.com{relative_link}" if relative_link.startswith("/") else relative_link
-                            
-                            date_elem = article.find_element(By.CLASS_NAME, "card-date")
-                            date = date_elem.text.strip() if date_elem else "Nincs dátum"
-                            
-                            all_articles.append({
-                                "title": title,
-                                "link": full_link,
-                                "date": date
-                            })
-                        except Exception as e:
-                            print(f"Elem feldolgozási hiba: {e}")
-                            continue
-
-                except:
-                    # Ha nincs több "Load More" gomb
-                    print("Nincs több cikk betölthető.")
-                    break
-
-        except Exception as e:
-            print(f"Cikkek betöltési hiba: {e}")
-
+    # A kinyert adatokat egy változóban tároljuk
+    # Kinyomtathatjuk a változó tartalmát, ha szükséges
+    for publication in publications_data:
+        print(f"Cikk cím: {publication['title']}")
+        print(f"PDF link: {publication['link']}\n")
+        
+    # WebDriver bezárása
     driver.quit()
 
-    # Cikkek kiírása
-    for article in all_articles:
-        print(f"Cím: {article['title']}")
-        print(f"Link: {article['link']}")
-        print(f"Dátum: {article['date']}\n")
-
-    return all_articles
+    return publications_data
 
 
-# celonis.com
-celonis()
+def clean_articles(articles):
+    raw_data = []
+    processed_texts = []
+    token_lists = []
 
-# marketresearchfuture.com
-marketresearchfuture("https://www.marketresearchfuture.com/report-types/cooked-research-reports", pages=20)
-marketresearchfuture("https://www.marketresearchfuture.com/report-types/half-cooked-research-reports", pages=20)
+    for article in articles:
+        title = article.get("title", "")
+        link = article.get("link", "")
+        content = ""
 
-# ssonetwork.com
-sstonework()
+        if link:
+            try:
+                response = requests.get(link, timeout=10)
+                if response.status_code == 200:
+                    response.encoding = response.apparent_encoding
+                    soup = BeautifulSoup(response.text, "html.parser")
+                    paragraphs = soup.find_all("p")
+                    content = " ".join(p.get_text(strip=True) for p in paragraphs[:10])
+            except Exception as e:
+                print(f"Hiba a tartalom lekérésekor ({link}): {e}")
+                content = "[Hiba a tartalom lekérésekor]"
 
-# thinkhdi.com
-thinkhdi()
+        tokens = preprocess_tokens(content)
+        token_lists.append(tokens)
+        processed_texts.append(" ".join(tokens))
 
-#servicenow.com/blog
-servicenow_blog()
+        raw_data.append({
+            "Cikk címe": title,
+            "Cikk linkje": link,
+            "Cikk tartalma": content
+        })
+
+    # Top 10 common words (after stemming + lemmatization)
+    for i, article in enumerate(raw_data):
+        counter = Counter(token_lists[i])
+        top10_common = [word for word, _ in counter.most_common(10)]
+        article["Top 10 szó"] = ", ".join(top10_common)
+
+    # TF-IDF számítás
+    vectorizer = TfidfVectorizer()
+    tfidf_matrix = vectorizer.fit_transform(processed_texts)
+    feature_names = vectorizer.get_feature_names_out()
+
+    for i, article in enumerate(raw_data):
+        tfidf_vector = tfidf_matrix[i]
+        tfidf_scores = zip(tfidf_vector.indices, tfidf_vector.data)
+        sorted_words = sorted(tfidf_scores, key=lambda x: x[1], reverse=True)
+        top_words = [feature_names[idx] for idx, _ in sorted_words[:10]]
+        article["Top 10 TFIDF szó"] = ", ".join(top_words)
+
+    return raw_data
+
+def save_to_excel():
+    # Weboldalak adatainak lekérése
+    #celonis_articles = celonis()
+    market_news = news()
+    #market_reports = marketresearchfuture("https://www.marketresearchfuture.com/reports")
+    #ssonetwork_articles = sstonework()
+    #thinkhdi_articles = thinkhdi()
+    #servicenow_articles = servicenow()
+
+    # Tisztítás és tartalom hozzáadása
+    dfs = {
+        #"Celonis": pd.DataFrame(clean_articles(celonis_articles)),
+        "MarketResearchFuture_News": pd.DataFrame(clean_articles(market_news)),
+        #"MarketResearchFuture_Reports": pd.DataFrame(clean_articles(market_reports)),
+        #"SSONetwork": pd.DataFrame(clean_articles(ssonetwork_articles)),
+        #"ThinkHDI": pd.DataFrame(clean_articles(thinkhdi_articles)),
+        #"Servicenow":pd.DataFrame(clean_articles(servicenow_articles))
+    }
+
+    # Excel fájl létrehozása
+    with pd.ExcelWriter("output.xlsx", engine="openpyxl") as writer:
+        for sheet_name, df in dfs.items():
+            df.to_excel(writer, sheet_name=sheet_name, index=False)
+
+    print("Sikeresen elkészült az output.xlsx fájl, cikk tartalmakkal együtt!")
+
+# Használat:
+save_to_excel()
