@@ -1,41 +1,68 @@
-from src.scrape_news import scrapeNews
-from src.google_trends import get_trends
-from src.lidl_social_media_scraping import get_social_media
-from src.sn_researchscrape import get_publications
-from src.penzugyiadatok import get_financial_data
+from src.news2 import ScrapeNews
+from src.social_media import getSocialMedia
+import pandas as pd
+import nltk
+from nltk.sentiment import SentimentIntensityAnalyzer
 
+nltk.download('vader_lexicon')  # Only once
+sia = SentimentIntensityAnalyzer()
+
+companies = pd.read_excel('src/Céglista.xlsx', sheet_name='Cégek - angol')
+key_words = pd.read_excel('src/Céglista.xlsx', sheet_name='Céghez kapcsolható kulcs (angol')
+key_words = key_words['Kulcsszavak'].to_list()
+companies_list = companies['Cég neve'].to_list()
+print(companies_list)
+
+list_for_df = []
 
 def main():
-    """
-    ez működik
-    """
-    #print("calling news scraper...")
-    #result = scrapeNews()
-    #print(result)
-    """
-    pytrends nem működik
-    """
-    #result1, result2 = get_trends()
-    """
-    social media is működik
-    """
-    #result = get_social_media()
-    #print(result)
-    """
-    publications működik (selenium)
-    """
-    #result = get_publications()
-    #print(result)
-    """
-    financial data
-    """
-    result = get_financial_data()
-    print(result)
+    for i, company in enumerate(companies_list):
+        print(f'Analyzing for: {company}')
+        if i == 10:
+            break
+        list_item = [i, company]
+        try:
+            print(f'getting the news for {company}')
+            news = ScrapeNews(company)
+            
+            news_list = [news[i]['description'] for i in range(len(news)) if news[i]['description'] != None]
+            compound_scores = [sia.polarity_scores(title)['compound'] for title in news_list]
+            
+            average_sentiment = sum(compound_scores) / len(compound_scores)
+            
+            list_of_words = []
+            for description in news_list:
+                words = description.lower().split()  # Split into words
+                list_of_words.extend(words)
+            
+            keywords_count = 0
+            for i in list_of_words:
+                if i.lower() in key_words:
+                    keywords_count += 1
 
+            print(average_sentiment)
+            list_item.append(len(compound_scores))
+            list_item.append(average_sentiment)
+            list_item.append(keywords_count)
+        except:
+            print("A híreket most nem sikerült összegyűjteni egy hiba miatt")
+            list_item.append(None)
+            list_item.append(None)
+            list_item.append(None)
+        
+        try:
+            social_media = getSocialMedia(company)
+            print(social_media)    
+            list_item.append(social_media)
+        except Exception as e:
+            print(f"Hiba történt: {e}")
+            list_item.append(None)
 
-    #todo: pytrends
-    #shape data into csv
-
+        list_for_df.append(list_item)
+        print(i)
+        
+    output = pd.DataFrame(list_for_df, columns=['Id', 'Company', 'Number of news', 'Average news sentiment', 'Number of AI key words', 'Average social media sentiment'])    
+    output.to_csv('output.csv')
 
 if __name__ == '__main__':
     main()
