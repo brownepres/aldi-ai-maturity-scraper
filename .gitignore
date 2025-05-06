@@ -8,3 +8,6 @@ test.ipynb
 .DS_Store
 
 output.csv
+build/
+dist/
+app.spec
