@@ -3,14 +3,22 @@ import time
 import pandas as pd
 import os
 from transformers import pipeline
-
+import sys
 
 # API kulcs és CSE ID
 api_key = "AIzaSyDMgAtDM9eDQHH5YMiQ45RJY5xta1fVOrI"
 cx = "5785af9aa16b4437b"
 
 # Kulcsszavak beolvasása
-kulcsszavak_df = pd.read_excel("src/Céglista.xlsx", sheet_name='Céghez kapcsolható kulcs (angol')
+def get_resource_path(filename):
+    if getattr(sys, 'frozen', False):  # running as a bundle
+        base_path = sys._MEIPASS
+    else:
+        base_path = os.path.dirname(__file__)
+    return os.path.join(base_path, 'src', filename)
+
+file_path = get_resource_path('companies.xlsx')
+kulcsszavak_df = pd.read_excel(file_path, sheet_name='keywords-english')
 kulcsszavak = kulcsszavak_df.iloc[:, 0].dropna().unique()  # Feltételezve, hogy az első oszlopban vannak a kulcsszavak
 
 # Kulcsszavak összeállítása "OR" kapcsolóval

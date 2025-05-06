@@ -3,14 +3,25 @@ from src.social_media import getSocialMedia
 import pandas as pd
 import nltk
 from nltk.sentiment import SentimentIntensityAnalyzer
+import os
+import sys
 
 nltk.download('vader_lexicon')  # Only once
 sia = SentimentIntensityAnalyzer()
 
-companies = pd.read_excel('src/Céglista.xlsx', sheet_name='Cégek - angol')
-key_words = pd.read_excel('src/Céglista.xlsx', sheet_name='Céghez kapcsolható kulcs (angol')
-key_words = key_words['Kulcsszavak'].to_list()
-companies_list = companies['Cég neve'].to_list()
+def get_resource_path(filename):
+    if getattr(sys, 'frozen', False):  # running as a bundle
+        base_path = sys._MEIPASS
+    else:
+        base_path = os.path.dirname(__file__)
+    return os.path.join(base_path, 'src', filename)
+
+file_path = get_resource_path('companies.xlsx')
+
+companies = pd.read_excel(file_path, sheet_name='companies-english')
+key_words = pd.read_excel(file_path, sheet_name='keywords-english')
+key_words = key_words['keywords'].to_list()
+companies_list = companies['company_name'].to_list()
 print(companies_list)
 
 list_for_df = []
@@ -22,7 +33,6 @@ def main():
             break
         list_item = [i, company]
         try:
-            print(f'getting the news for {company}')
             news = ScrapeNews(company)
             
             news_list = [news[i]['description'] for i in range(len(news)) if news[i]['description'] != None]
@@ -40,12 +50,11 @@ def main():
                 if i.lower() in key_words:
                     keywords_count += 1
 
-            print(average_sentiment)
             list_item.append(len(compound_scores))
             list_item.append(average_sentiment)
             list_item.append(keywords_count)
         except:
-            print("A híreket most nem sikerült összegyűjteni egy hiba miatt")
+            print("The news could not be collected due to an error")
             list_item.append(None)
             list_item.append(None)
             list_item.append(None)
@@ -55,7 +64,7 @@ def main():
             print(social_media)    
             list_item.append(social_media)
         except Exception as e:
-            print(f"Hiba történt: {e}")
+            print(f"Social media data could not be collected due to an error. {e}")
             list_item.append(None)
 
         list_for_df.append(list_item)
