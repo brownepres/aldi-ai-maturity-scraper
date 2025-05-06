@@ -13,9 +13,10 @@ cx = "5785af9aa16b4437b"
 def get_resource_path(filename):
     if getattr(sys, 'frozen', False):  # running as a bundle
         base_path = sys._MEIPASS
+        return os.path.join(base_path, 'src', filename)
     else:
-        base_path = os.path.dirname(__file__)
-    return os.path.join(base_path, 'src', filename)
+        path = f"src/{filename}"
+        return path
 
 file_path = get_resource_path('companies.xlsx')
 kulcsszavak_df = pd.read_excel(file_path, sheet_name='keywords-english')

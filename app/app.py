@@ -1,5 +1,6 @@
 from src.news2 import ScrapeNews
 from src.social_media import getSocialMedia
+from src.oldalak_diagram import pages
 import pandas as pd
 import nltk
 from nltk.sentiment import SentimentIntensityAnalyzer
@@ -12,9 +13,11 @@ sia = SentimentIntensityAnalyzer()
 def get_resource_path(filename):
     if getattr(sys, 'frozen', False):  # running as a bundle
         base_path = sys._MEIPASS
+        return os.path.join(base_path, 'src', filename)
     else:
-        base_path = os.path.dirname(__file__)
-    return os.path.join(base_path, 'src', filename)
+        path = f"src/{filename}"
+        return path
+    
 
 file_path = get_resource_path('companies.xlsx')
 
@@ -29,7 +32,7 @@ list_for_df = []
 def main():
     for i, company in enumerate(companies_list):
         print(f'Analyzing for: {company}')
-        if i == 10:
+        if i == 1:
             break
         list_item = [i, company]
         try:
@@ -72,6 +75,11 @@ def main():
         
     output = pd.DataFrame(list_for_df, columns=['Id', 'Company', 'Number of news', 'Average news sentiment', 'Number of AI key words', 'Average social media sentiment'])    
     output.to_csv('output.csv')
+
+    #scrape the desired pages
+    print("Analyzing the desired AI trend pages")
+    result = pages()
+
 
 if __name__ == '__main__':
     main()
