@@ -7,7 +7,6 @@ astunparse==1.6.3
 av==14.3.0
 azureml==0.2.7
 beautifulsoup4==4.13.4
-causal_conv1d==1.5.0.post8
 cbor==1.0.0
 clearml==1.18.0
 codecarbon==3.0.1
