@@ -38,7 +38,6 @@ flash_attn==2.7.4.post1
 flax==0.10.6
 flute==0.2.0
 flytekit==1.15.4
-foo==.1
 fsspec==2025.3.2
 ftfy==6.3.1
 fugashi==1.4.0
