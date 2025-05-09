@@ -2,10 +2,10 @@ import yfinance as yf
 import pandas as pd
 
 # Cégek listája
-companies = [
-    "TSCO.L", "MEO.DE", "AMZN", "SHEL", "MOLB", "BP.L", "MCD", "SBUX", "NESN.S", "ULVR.L", 
-    "PG", "KO", "PEP", "HEIA.AS", "DGE.L", "CARL.B", "IBM", "ACN", "CTSH", "TCS.NS", 
-    "CAP.PA", "GNTX", "WIPRO.NS", "INFY.NS", "HCLTECH.NS", "DXC", "SAP", "ORCL", "MSFT", "NOW", "SIE.DE"
+companies = [ 
+    "AMZN", "MCD", "YUM", "SBUX", "NESN.SW", "UL", "PG", "KO", "PEP", "HEIA.AS", "DEO", 
+    "CARL-B.CO", "IBM", "ACN", "CTSH", "TCS.NS", "CAP.PA", "G", "WIT", "INFY", 
+    "HCLTECH.NS", "DXC", "SAP", "ORCL", "MSFT", "NOW", "SIEGY", "IT", "SHEL", "BP", "TSCO.L"
 ]
 
 # Évek, amelyekre az adatokat kérjük
