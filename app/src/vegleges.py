@@ -486,7 +486,7 @@ def clean_articles_servicenow(articles):
                 "Cikk linkje": link,
                 "Cikk tartalma": content
             })
-            counter = counter + 1
+            #counter = counter + 1
 
     # Top 10 common words (after stemming + lemmatization)
     for i, article in enumerate(raw_data):
@@ -560,7 +560,7 @@ def clean_articles_celonis(articles):
                 "Cikk linkje": link,
                 "Cikk tartalma": content
             })
-            counter += 1
+            #counter += 1
 
     # Top 10 gyakori szó (stemming + lemmatizálás után, ha van ilyen lépés korábban)
     for i, article in enumerate(raw_data):
@@ -616,7 +616,7 @@ def clean_articles_sstonework(articles):
                 "Cikk linkje": link,
                 "Cikk tartalma": content
             })
-            counter = counter + 1
+            #counter = counter + 1
 
     # Top 10 common words (after stemming + lemmatization)
     for i, article in enumerate(raw_data):
@@ -672,7 +672,7 @@ def clean_articles_news(articles):
                 "Cikk linkje": link,
                 "Cikk tartalma": content
             })
-            counter = counter + 1
+            #counter = counter + 1
 
     # Top 10 common words (after stemming + lemmatization)
     for i, article in enumerate(raw_data):
