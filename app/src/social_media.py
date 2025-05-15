@@ -2,8 +2,11 @@ import requests
 import time
 import pandas as pd
 import os
-from transformers import pipeline
 import sys
+import nltk
+from nltk.sentiment import SentimentIntensityAnalyzer
+nltk.download('vader_lexicon')  # Only once
+sia = SentimentIntensityAnalyzer()
 
 # API kulcs és CSE ID
 api_key = "AIzaSyDMgAtDM9eDQHH5YMiQ45RJY5xta1fVOrI"
@@ -64,26 +67,7 @@ def getSocialMedia(company):
             print(f"Hiba {company} cégnél, {start_index}. találatnál: {response.status_code}")
             break
 
-    # Eredmények mentése Excelbe
-    df = pd.DataFrame(all_results)
-    sentiment_pipeline = pipeline("sentiment-analysis")
-    def analyze_sentiment(snippet):
-        # Elemzés
-        result = sentiment_pipeline(snippet)
-        label = result[0]['label']  # 'POSITIVE', 'NEGATIVE', 'NEUTRAL'
-        score = result[0]['score']  # Bizalom pontszám (0 és 1 között)
-        
-        # Kiszámoljuk a folytonos skálát (-1 és 1 között)
-        if label == 'POSITIVE':
-            continuous_score = 2 * (score - 0.5)  # Átalakítjuk 0.5-ből egy [-1, 1] skálára
-        elif label == 'NEGATIVE':
-            continuous_score = 2 * (0.5 - score)  # Negatív skála
-        else:
-            continuous_score = 0  # Semleges érték
-        
-        return label, score, continuous_score
-
-    df[['Sentiment', 'Score', 'Continuous_Score']] = df['Snippet'].apply(lambda x: pd.Series(analyze_sentiment(x)))
-
-    average_sentiment = df.groupby('Company')['Continuous_Score'].mean().reset_index()
-    return average_sentiment['Continuous_Score'].iloc[0]
+        compound_scores = [sia.polarity_scores(i['Snippet'])['compound'] for i in all_results]
+            
+        average_sentiment = sum(compound_scores) / len(compound_scores)
+    return average_sentiment

@@ -3,6 +3,7 @@ from src.social_media import getSocialMedia
 from src.oldalak_diagram import pages
 from src.penzugyiadatok import get_financial_data
 from src.create_visuals import makeVisuals
+from src.végleges2 import getPages
 import pandas as pd
 import nltk
 from nltk.sentiment import SentimentIntensityAnalyzer
@@ -111,7 +112,7 @@ def main():
 
     #scrape the desired pages
     print("Analyzing the desired AI trend pages")
-    result = pages()
+    result = getPages()
 
 
 if __name__ == '__main__':
