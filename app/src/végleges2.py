@@ -245,21 +245,17 @@ def servicenow():
     counter=0
     # Cikkek címének és PDF linkjének kinyerése
     for pub in publications:
-        if counter < 100:
-            title = pub.find_element(By.CSS_SELECTOR, 'a[style="font-weight: bold;"]')
-            article_link_element = pub.find_element(By.CSS_SELECTOR, 'a[style*="font-weight: bold"]')
-            pdf_link = article_link_element.get_attribute('href')
-            counter=counter+1
-        
- 
-        print(pdf_link)
+        title = pub.find_element(By.CSS_SELECTOR, 'a[style="font-weight: bold;"]')
+        article_link_element = pub.find_element(By.CSS_SELECTOR, 'a[style*="font-weight: bold"]')
+        pdf_link = article_link_element.get_attribute('href')        
         
         # Ha mindkét adat létezik, hozzáadjuk a listához
-        if title and pdf_link:
+        if title and pdf_link and counter<100:
             publications_data.append({
                 'title': title.text,
                 'link': pdf_link
             })
+            counter=counter+1
 
     # A kinyert adatokat egy változóban tároljuk
     # Kinyomtathatjuk a változó tartalmát, ha szükséges
