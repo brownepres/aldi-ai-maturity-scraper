@@ -1,4 +1,6 @@
 # aldi-ai-maturity-scraper
 
-This is a universtiy project working tandem with Aldi IIS.
-The goal of this project is to build an automated scraper bot which scrapes legally available data from Aldi competitiors, calculating AI maturity based on pre-defined metrics. 
+Advanced scraper tool tailored for AI related SSC and retail market analysis.
+
+## Objective and result
+The objective was to create an on-premise executable software for advanced web (news, social media, financial information, publications, trend-setters etc) scraping for analyzing emerging AI trends. The result incorporates several riports, a scoring system for selected players market boosted with an NLP-based general AI trend analysis.
