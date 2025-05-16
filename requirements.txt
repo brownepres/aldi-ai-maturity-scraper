@@ -13,11 +13,8 @@ codecarbon==3.0.1
 colorama==0.4.6
 comet_ml==3.49.9
 compressed_tensors==0.9.1
-conda==4.3.16
 coremltools==8.3.0
 dagshub==0.5.9
-decord==0.6.0
-deeplearning==0.0.1
 defusedxml==0.7.1
 dill==0.3.8
 dp==1.00
@@ -26,14 +23,9 @@ duckduckgo_search==8.0.1
 dvclive==3.48.2
 einops==0.8.1
 elasticsearch==9.0.1
-etcd==2.0.8
 expecttest==0.3.0
-faiss==1.5.3
-fast_hadamard_transform==1.0.4.post1
 fb==0.4.0
-fbgemm_gpu==1.2.0
 fbscribelogger==0.1.7
-flash_attn==2.7.4.post1
 flax==0.10.6
 flute==0.2.0
 flytekit==1.15.4
@@ -49,7 +41,6 @@ gradio_client==1.10.0
 grokadamw==0.1.2
 huggingface_hub==0.28.1
 hypothesis==6.131.14
-intel_extension_for_pytorch==2.7.0
 ipadic==1.0.0
 jax==0.6.0
 jaxlib==0.6.0
@@ -61,7 +52,6 @@ keras==3.9.2
 keras_nlp==0.20.0
 liger_kernel==0.5.9
 lomo_optim==0.1.1
-mamba_ssm==2.2.4
 mambapy==1.2.0
 markdownify==1.1.0
 mlflow==2.22.0
@@ -92,7 +82,6 @@ pytest==7.4.4
 pythainlp==5.1.1
 python_Levenshtein==0.27.1
 pytorch_lightning==2.5.0.post0
-pytorch_quantization==2.2.1
 rarfile==4.2
 ray==2.45.0
 rhoknp==1.7.1
