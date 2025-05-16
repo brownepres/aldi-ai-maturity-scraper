@@ -11,3 +11,5 @@ output.csv
 build/
 dist/
 app.spec
+
+*.png
