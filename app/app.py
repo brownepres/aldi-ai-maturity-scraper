@@ -1,6 +1,5 @@
 from src.news2 import ScrapeNews
 from src.social_media import getSocialMedia
-from src.oldalak_diagram import pages
 from src.penzugyiadatok import get_financial_data
 from src.create_visuals import makeVisuals
 from src.végleges2 import getPages
